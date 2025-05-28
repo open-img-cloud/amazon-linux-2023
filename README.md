@@ -15,7 +15,7 @@
     <img src="img/logo.png" alt="Logo" width="150" height="150">
   </a>
 
-<h3 align="center">🚀 Amazon Linux 2023 Cloud Images</h3>
+<h3 align="center">Amazon Linux 2023 Cloud Images</h3>
 
   <p align="center">
     ☁️ Optimized Amazon Linux 2023 images for OpenStack and Proxmox environments with cloud-init support
