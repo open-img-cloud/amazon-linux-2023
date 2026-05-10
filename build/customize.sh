@@ -15,9 +15,13 @@
 #   - install qemu-guest-agent (not in upstream) and enable it
 #   - sysprep cleanup of dnf caches
 #
-# Note: virt-customize's `--install` uses libguestfs OS inspection to
-# pick dnf for AL2023, which works out of the box (AL2023 is properly
-# detected as an Amazon Linux fork).
+# Note: virt-customize's `--install` would normally use libguestfs OS
+# inspection to pick dnf for AL2023. But libguestfs in the stackopshq
+# builder image doesn't recognize Amazon Linux 2023 as RHEL-compatible
+# and fails with "no package manager detected" — same gap we hit on
+# Alpaquita. We bypass the inspection layer with explicit
+# `--run-command 'dnf install -y ...'` which always works because dnf
+# is the native package manager and is on PATH inside the appliance.
 
 set -euo pipefail
 
@@ -31,7 +35,7 @@ fi
 echo "[customize] target: $QCOW2"
 
 virt-customize -a "$QCOW2" \
-  --install qemu-guest-agent \
+  --run-command 'dnf install -y qemu-guest-agent' \
   --run-command 'systemctl enable qemu-guest-agent.service' \
   --run-command 'rm -rf /var/cache/dnf /var/cache/yum /tmp/* /var/tmp/*'
 
