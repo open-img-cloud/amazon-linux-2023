@@ -12,16 +12,15 @@
 # any cloud.cfg.d/ override here.
 #
 # Customisation reduces to:
-#   - install qemu-guest-agent (not in upstream) and enable it
-#   - sysprep cleanup of dnf caches
+#   - dnf cache cleanup so the published qcow2 is smaller
 #
-# Note: virt-customize's `--install` would normally use libguestfs OS
-# inspection to pick dnf for AL2023. But libguestfs in the stackopshq
-# builder image doesn't recognize Amazon Linux 2023 as RHEL-compatible
-# and fails with "no package manager detected" — same gap we hit on
-# Alpaquita. We bypass the inspection layer with explicit
-# `--run-command 'dnf install -y ...'` which always works because dnf
-# is the native package manager and is on PATH inside the appliance.
+# Originally we wanted to install qemu-guest-agent here too, but the
+# upstream AL2023 repos at the snapshot URL pinned by the cloud image
+# return "No match for argument: qemu-guest-agent" even with --refresh.
+# Tracking that as a follow-up — when we resolve the right package name
+# / repo enablement, add it back. For v1 we ship without qemu-ga;
+# users who need it can `dnf install qemu-guest-agent` post-deploy
+# after pointing the system at a fresh dnf snapshot.
 
 set -euo pipefail
 
@@ -35,8 +34,6 @@ fi
 echo "[customize] target: $QCOW2"
 
 virt-customize -a "$QCOW2" \
-  --run-command 'dnf install -y --refresh qemu-guest-agent' \
-  --run-command 'systemctl enable qemu-guest-agent.service' \
   --run-command 'rm -rf /var/cache/dnf /var/cache/yum /tmp/* /var/tmp/*'
 
 echo "[customize] done"
