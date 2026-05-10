@@ -35,7 +35,7 @@ fi
 echo "[customize] target: $QCOW2"
 
 virt-customize -a "$QCOW2" \
-  --run-command 'dnf install -y qemu-guest-agent' \
+  --run-command 'dnf install -y --refresh qemu-guest-agent' \
   --run-command 'systemctl enable qemu-guest-agent.service' \
   --run-command 'rm -rf /var/cache/dnf /var/cache/yum /tmp/* /var/tmp/*'
 
