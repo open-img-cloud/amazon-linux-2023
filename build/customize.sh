@@ -17,7 +17,7 @@
 # Originally we wanted to install qemu-guest-agent here too, but the
 # upstream AL2023 repos at the snapshot URL pinned by the cloud image
 # return "No match for argument: qemu-guest-agent" even with --refresh.
-# Tracking that as a follow-up — when we resolve the right package name
+# Tracking that as a follow-up: when we resolve the right package name
 # / repo enablement, add it back. For v1 we ship without qemu-ga;
 # users who need it can `dnf install qemu-guest-agent` post-deploy
 # after pointing the system at a fresh dnf snapshot.
