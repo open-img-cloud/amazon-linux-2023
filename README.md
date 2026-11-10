@@ -48,7 +48,7 @@ Customisations applied to the upstream rootfs:
 
 The upstream AL2023 image already ships cloud-init, openssh-server,
 GRUB2 with serial console wired (`console=tty0 console=ttyS0,115200`),
-and the `ec2-user` default user — we don't override any of that.
+and the `ec2-user` default user: we don't override any of that.
 
 Each release publishes:
 
@@ -85,7 +85,7 @@ cosign verify-blob \
 ```
 
 The certificate identity points at the **reusable** build workflow in
-`open-img-cloud/.github` — that's where GitHub's OIDC binds the SAN for
+`open-img-cloud/.github`: that's where GitHub's OIDC binds the SAN for
 keyless signing, regardless of which caller repo invoked it. To tie the
 artifact back to *this* repo's commit, also check `MANIFEST.json`: it
 pins the caller `commit` SHA, the workflow run URL, and the builder
@@ -161,7 +161,7 @@ Distributed under the GPL-2.0 License. See `LICENSE`.
 
 ## Contact
 
-Kevin Allioli — kevin@stackops.ch · [@stackopshq](https://twitter.com/stackopshq)
+Kevin Allioli · kevin@stackops.ch · [@stackopshq](https://twitter.com/stackopshq)
 
 Project: [open-img-cloud/amazon-linux-2023](https://github.com/open-img-cloud/amazon-linux-2023)
 
