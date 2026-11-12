@@ -1,184 +1,120 @@
-<div id="top"></div>
+<p align="center">
+  <a href="https://openimages.cloud/images/amazon-linux-2023/">
+    <img src="https://openimages.cloud/img/og/amazon-linux-2023.png" alt="Amazon Linux 2023 cloud image for OpenStack and Proxmox" width="720">
+  </a>
+</p>
 
-<!-- PROJECT SHIELDS -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![GPL-2.0 License][license-shield]][license-url]
+<p align="center">
+  <a href="https://openimages.cloud/images/amazon-linux-2023/"><img alt="Latest version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fimages.openimages.cloud%2Famazon-linux-2023%2Flatest%2FMANIFEST.json&query=%24.version&label=latest&color=2459c4&cacheSeconds=3600"></a>
+  <a href="https://github.com/open-img-cloud/amazon-linux-2023/actions/workflows/release.yml"><img alt="Release" src="https://github.com/open-img-cloud/amazon-linux-2023/actions/workflows/release.yml/badge.svg"></a>
+  <a href="https://openimages.cloud/verify/"><img alt="Signed with Sigstore cosign" src="https://img.shields.io/badge/signed-Sigstore%20cosign-2459c4"></a>
+  <a href="https://openimages.cloud/quality/"><img alt="Boot-tested on OpenStack" src="https://img.shields.io/badge/boot--tested-OpenStack-2459c4"></a>
+  <a href="LICENSE"><img alt="License GPL-2.0" src="https://img.shields.io/badge/license-GPL--2.0-555"></a>
+</p>
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
+<p align="center">
+  <a href="https://openimages.cloud/images/amazon-linux-2023/"><b>Catalog page</b></a> ·
+  <a href="https://images.openimages.cloud/amazon-linux-2023/latest/">Download</a> ·
+  <a href="https://openimages.cloud/verify/">Verify</a> ·
+  <a href="https://github.com/open-img-cloud/docs">Documentation</a> ·
+  <a href="https://github.com/open-img-cloud/amazon-linux-2023/issues">Report an issue</a>
+</p>
 
-<h3 align="center">Amazon Linux 2023 Cloud Images</h3>
+Amazon Linux 2023 cloud image (qcow2) for **OpenStack** and **Proxmox**: the official AWS KVM
+image with kernel 6.1, verified, made ready for both clouds with the same rules as every
+[openimages.cloud](https://openimages.cloud) image, signed with Sigstore cosign and boot-tested
+on a real OpenStack before it is published.
 
-  <p align="center">
-    Cloud-init-ready, signed Amazon Linux 2023 images for OpenStack and Proxmox
-    <br />
-    <br />
-    <a href="https://github.com/open-img-cloud/amazon-linux-2023/issues">Report a bug</a>
-    ·
-    <a href="https://github.com/open-img-cloud/amazon-linux-2023/issues">Request a feature</a>
-  </p>
-</div>
+## At a glance
 
-## About
+| | |
+|---|---|
+| **Upstream** | [Amazon Linux 2023](https://aws.amazon.com/linux/amazon-linux-2023/) KVM image `al2023-kvm-<version>-kernel-6.1-x86_64.xfs.gpt.qcow2` from [cdn.amazonlinux.com](https://cdn.amazonlinux.com/al2023/os-images/latest/kvm/), checked against its `SHA256SUMS` |
+| **Default user** | `ec2-user`, SSH key only, passwordless `sudo` |
+| **Firmware** | BIOS |
+| **Format** | qcow2, x86_64, root filesystem grown to the disk at first boot |
+| **Disk** | the image declares a 25 GB virtual disk: use a flavor with at least a 25 GB root disk |
+| **Version** | the upstream release, `2023.<minor>.<date>.<build>`, e.g. `2023.12.20261109.0` ([all versions](https://images.openimages.cloud/amazon-linux-2023/versions.json)) |
+| **Support** | Amazon Linux 2023 is the successor of Amazon Linux 2, supported by AWS |
 
-This repo builds [Amazon Linux 2023][al2023] cloud images on top of the
-upstream `al2023-kvm-*-kernel-6.1-x86_64.xfs.gpt.qcow2` artifact
-published at
-[cdn.amazonlinux.com/al2023/os-images/latest/kvm/][upstream] and
-republishes it through the openimages.cloud signed-release pipeline.
-
-The build pipeline is shared with the rest of [`open-img-cloud`][org]:
-this repo only ships the `VERSION`, `customize.sh`, `detect-upstream.sh`,
-and two thin caller workflows that delegate to the reusable workflows
-in [`open-img-cloud/.github`][shared] (`@main`).
-
-Customisations applied to the upstream rootfs:
-
-- **qemu-guest-agent** added (not in the upstream image) and enabled
-  at boot via systemd
-- **Org-wide cloud-init policy drop-in** (`99_oic-policy.cfg`) injected
-  by the reusable workflow into `/etc/cloud/cloud.cfg.d/`, pinning
-  `datasource_list: [OpenStack, ConfigDrive, NoCloud, None]` and
-  `disable_root: true` / `ssh_pwauth: false`
-- **`virt-sysprep`** to clean transient state, then `virt-sparsify --compress`
-
-The upstream AL2023 image already ships cloud-init, openssh-server,
-GRUB2 with serial console wired (`console=tty0 console=ttyS0,115200`),
-and the `ec2-user` default user: we don't override any of that.
-
-Each release publishes:
-
-- `al2023-<version>-x86_64.qcow2`
-- `*.sha256`, `*.sha1`, `*.md5` per-file
-- `*.bundle` cosign sigstore-bundle (signature + cert + Rekor proof)
-- `MANIFEST.json` (build metadata, including the builder image digest)
-- `index.html` directory listing
-
-## Where to download
-
-Public CDN, served via Cloudflare in front of an R2 bucket (mirror of
-the source-of-truth Garage):
-
-| URL pattern                                                                             | Cache policy                  |
-|-----------------------------------------------------------------------------------------|-------------------------------|
-| `https://images.openimages.cloud/amazon-linux-2023/<version>/<filename>`                | `max-age=31536000, immutable` |
-| `https://images.openimages.cloud/amazon-linux-2023/latest/<filename>`                   | `max-age=300`                 |
-
-Browse: [images.openimages.cloud/amazon-linux-2023/latest/][latest]
-
-## Verify before deploy
-
-cosign 3.x:
+## Quick start
 
 ```sh
-sha256sum -c <filename>.sha256                    # integrity
-cosign verify-blob \
-    --bundle <filename>.bundle \
-    --new-bundle-format \
-    --certificate-identity-regexp '^https://github.com/open-img-cloud/\.github/\.github/workflows/build-libguestfs-image\.yml@' \
-    --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-    <filename>                                     # provenance
+# Latest version and its file name, from the signed manifest
+M=https://images.openimages.cloud/amazon-linux-2023/latest/MANIFEST.json
+V=$(curl -fsS $M | jq -r .version); F=$(curl -fsS $M | jq -r .filename)
+curl -fLO https://images.openimages.cloud/amazon-linux-2023/$V/$F
 ```
 
-The certificate identity points at the **reusable** build workflow in
-`open-img-cloud/.github`: that's where GitHub's OIDC binds the SAN for
-keyless signing, regardless of which caller repo invoked it. To tie the
-artifact back to *this* repo's commit, also check `MANIFEST.json`: it
-pins the caller `commit` SHA, the workflow run URL, and the builder
-image digest.
-
-## How to use
-
-### OpenStack
+<details>
+<summary><b>OpenStack</b></summary>
 
 ```sh
-# Pull the qcow2 (replace <V> with the desired version, e.g. 2023.11.20260509.0)
-curl -fLO https://images.openimages.cloud/amazon-linux-2023/<V>/al2023-<V>-x86_64.qcow2
-
-openstack image create \
-    --disk-format qcow2 --container-format bare \
-    --min-disk 25 \
-    --file al2023-<V>-x86_64.qcow2 \
-    'Amazon Linux 2023 <V>'
+openstack image create --disk-format qcow2 --container-format bare \
+  --min-disk 25 \
+  --property os_distro=amzn --property os_version=2023 \
+  --property os_admin_user=ec2-user \
+  --file "$F" "Amazon Linux 2023"
 ```
 
-### Proxmox VE
+The full property set is on the
+[catalog page](https://openimages.cloud/images/amazon-linux-2023/) and in
+[`index.json`](https://images.openimages.cloud/index.json). To keep images up to date
+automatically, use [oic-sync](https://github.com/open-img-cloud/oic-sync).
+
+</details>
+
+<details>
+<summary><b>Proxmox VE</b></summary>
+
+The commands to create a cloud-init template from this image are on the
+[catalog page](https://openimages.cloud/images/amazon-linux-2023/).
+
+</details>
+
+<details>
+<summary><b>Verify the signature</b></summary>
 
 ```sh
-scp al2023-<V>-x86_64.qcow2 root@proxmox:/var/lib/vz/template/iso/
-
-qm create <VMID> --name al2023-template --memory 1024 --cores 2 --net0 virtio,bridge=vmbr0
-qm importdisk <VMID> al2023-<V>-x86_64.qcow2 <STORAGE>
-qm set <VMID> --scsihw virtio-scsi-pci --scsi0 <STORAGE>:vm-<VMID>-disk-0
-qm set <VMID> --boot c --bootdisk scsi0
-qm set <VMID> --ide2 <STORAGE>:cloudinit
-qm set <VMID> --serial0 socket --vga serial0
-qm set <VMID> --ciuser ec2-user --sshkeys ~/.ssh/authorized_keys --ipconfig0 ip=dhcp
+curl -fLO https://images.openimages.cloud/amazon-linux-2023/$V/$F.bundle
+cosign verify-blob "$F" --bundle "$F.bundle" \
+  --certificate-identity-regexp '^https://github.com/open-img-cloud/\.github/\.github/workflows/build-(libguestfs|dib|nix-flake|freebsd)-image\.yml@' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-## Release flow
+</details>
 
-1. **`watch.yml`** runs daily 06:29 UTC, calls `build/detect-upstream.sh`
-   which follows the `latest/` 302 redirect to extract the version
-   segment from the resolved CDN URL.
-2. If the version differs from the current `VERSION`, the workflow opens
-   (or updates) a PR `auto/upstream-bump`.
-3. Merging the PR + pushing a `v<VERSION>` tag fires `release.yml`,
-   which calls the shared `build-libguestfs-image.yml@main` reusable
-   workflow.
-4. Each build downloads the upstream qcow2, runs `customize.sh`,
-   sysprep, sparsify, signs, and uploads to Garage + R2 under
-   `s3://amazon-linux-2023/<version>/`. The `latest/` alias is replaced
-   and Cloudflare cache for `latest/` is purged.
+## What this image changes
 
-## Repository layout
+On top of the official image, and nothing else:
 
-```
-VERSION                          single line, e.g. "2023.11.20260509.0"
-build/
-  customize.sh                   virt-customize hook (qcow2 path as $1)
-  detect-upstream.sh             prints latest upstream version (follow latest/ 302)
-.github/workflows/
-  release.yml                    calls build-libguestfs-image.yml on tag push
-  watch.yml                      daily cron, calls upstream-watch.yml
-.gitignore                       repo-local override for global build/ exclusion
-LICENSE                          GPL-2.0
-```
+- adds the openimages.cloud cloud-init policy: config drive read first, then the metadata
+  service; no root login, no SSH password;
+- cleans package caches and machine identity so every instance starts fresh.
 
-## Contributing
+The upstream image already ships cloud-init, OpenSSH, a serial console and the `ec2-user`
+default user; they are left as they are. `qemu-guest-agent` is not included: the package is
+missing from the dnf snapshot the upstream image points at. Install it after deployment
+(`dnf install qemu-guest-agent`, against a current repository) if you need it.
 
-Fork, branch, PR. Keep changes focused; the customize hook in particular
-is consumed by the shared pipeline so backward-compatible tweaks are
-preferred over rewrites.
+Every release must pass the same [runtime contract](https://openimages.cloud/quality/) on
+OpenStack: SSH with the injected key, cloud-init finished, DNS, hostname, root filesystem grown,
+passwordless `sudo`, IPv6 address and egress.
+
+## How releases happen
+
+1. Every day at 06:29 UTC a watcher looks for a new upstream image and opens a pull request
+   that bumps [`VERSION`](VERSION).
+2. Merging it is all it takes: the release is tagged, built, signed, boot-tested and
+   published, then `latest/` and the [catalog](https://openimages.cloud/images/) move to it.
+
+This repository only holds what is specific to Amazon Linux 2023: [`VERSION`](VERSION),
+[`build/customize.sh`](build/customize.sh), [`build/detect-upstream.sh`](build/detect-upstream.sh)
+and thin workflows calling the shared pipeline in
+[`open-img-cloud/.github`](https://github.com/open-img-cloud/.github).
 
 ## License
 
-Distributed under the GPL-2.0 License. See `LICENSE`.
-
-## Contact
-
-Kevin Allioli · kevin@stackops.ch · [@stackopshq](https://twitter.com/stackopshq)
-
-Project: [open-img-cloud/amazon-linux-2023](https://github.com/open-img-cloud/amazon-linux-2023)
-
-[al2023]: https://aws.amazon.com/linux/amazon-linux-2023/
-[upstream]: https://cdn.amazonlinux.com/al2023/os-images/latest/kvm/
-[org]: https://github.com/open-img-cloud
-[shared]: https://github.com/open-img-cloud/.github
-[latest]: https://images.openimages.cloud/amazon-linux-2023/latest/
-
-<!-- shields -->
-[contributors-shield]: https://img.shields.io/github/contributors/open-img-cloud/amazon-linux-2023.svg?style=for-the-badge
-[contributors-url]: https://github.com/open-img-cloud/amazon-linux-2023/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/open-img-cloud/amazon-linux-2023.svg?style=for-the-badge
-[forks-url]: https://github.com/open-img-cloud/amazon-linux-2023/network/members
-[stars-shield]: https://img.shields.io/github/stars/open-img-cloud/amazon-linux-2023.svg?style=for-the-badge
-[stars-url]: https://github.com/open-img-cloud/amazon-linux-2023/stargazers
-[issues-shield]: https://img.shields.io/github/issues/open-img-cloud/amazon-linux-2023.svg?style=for-the-badge
-[issues-url]: https://github.com/open-img-cloud/amazon-linux-2023/issues
-[license-shield]: https://img.shields.io/github/license/open-img-cloud/amazon-linux-2023.svg?style=for-the-badge
-[license-url]: https://github.com/open-img-cloud/amazon-linux-2023/blob/main/LICENSE
+The build tooling in this repository is under [GPL-2.0](LICENSE). The image keeps the licensing
+terms of Amazon Linux 2023 (each package under its own license). Amazon Linux is a trademark of
+its owner; this project is not affiliated with Amazon Web Services.
