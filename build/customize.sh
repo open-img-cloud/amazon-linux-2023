@@ -12,15 +12,12 @@
 # any cloud.cfg.d/ override here.
 #
 # Customisation reduces to:
+#   - qemu-guest-agent (filesystem freeze for snapshots, IP reporting)
 #   - dnf cache cleanup so the published qcow2 is smaller
 #
-# Originally we wanted to install qemu-guest-agent here too, but the
-# upstream AL2023 repos at the snapshot URL pinned by the cloud image
-# return "No match for argument: qemu-guest-agent" even with --refresh.
-# Tracking that as a follow-up: when we resolve the right package name
-# / repo enablement, add it back. For v1 we ship without qemu-ga;
-# users who need it can `dnf install qemu-guest-agent` post-deploy
-# after pointing the system at a fresh dnf snapshot.
+# qemu-guest-agent comes from the AL2023 repositories (snapshot of the
+# image release). An earlier attempt failed with "No match" because the
+# builder had no network then (passt under Docker, fixed in builder 2.1.1).
 
 set -euo pipefail
 
@@ -34,6 +31,8 @@ fi
 echo "[customize] target: $QCOW2"
 
 virt-customize -a "$QCOW2" \
+  --run-command 'dnf install -y qemu-guest-agent' \
+  --run-command 'rpm -q qemu-guest-agent' \
   --run-command 'rm -rf /var/cache/dnf /var/cache/yum /tmp/* /var/tmp/*'
 
 echo "[customize] done"
